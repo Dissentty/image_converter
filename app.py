@@ -86,6 +86,7 @@ class MainWindow(QMainWindow):
         output_format = "PNG"
         final_path = self.selected_folder_path + "/converter_res"
         os.mkdir(final_path)
+        self.label.setText(f"Ждите окончания конвертации")
         for filename in os.listdir(self.selected_folder_path):
             if filename.endswith((".png", ".jpg", ".jpeg")):
                 img_path = os.path.join(self.selected_folder_path, filename)
@@ -93,7 +94,7 @@ class MainWindow(QMainWindow):
                     output_filename = os.path.splitext(filename)[0] + f".{output_format.lower()}"
                     output_path = os.path.join(final_path, output_filename)
                     img.convert("RGB").save(output_path, output_format)
-                    print(f"Сохранено: {output_path}")
+        self.label.setText("Конвертация завершена")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
