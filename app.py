@@ -74,6 +74,7 @@ class MainWindow(QMainWindow):
         container = QWidget()
         container.setLayout(layout)
         self.setCentralWidget(container)
+        self.selected_folder_path = ''
 
     def select_location(self):
         folder_path = QFileDialog.getExistingDirectory(self, 'Выберите папку')
@@ -83,18 +84,30 @@ class MainWindow(QMainWindow):
             print(folder_path)
 
     def convert(self):
-        output_format = "PNG"
-        final_path = self.selected_folder_path + "/converter_res"
-        os.mkdir(final_path)
-        self.label.setText(f"Ждите окончания конвертации")
-        for filename in os.listdir(self.selected_folder_path):
-            if filename.endswith((".png", ".jpg", ".jpeg")):
-                img_path = os.path.join(self.selected_folder_path, filename)
-                with Image.open(img_path) as img:
-                    output_filename = os.path.splitext(filename)[0] + f".{output_format.lower()}"
-                    output_path = os.path.join(final_path, output_filename)
-                    img.convert("RGB").save(output_path, output_format)
-        self.label.setText("Конвертация завершена")
+        if self.selected_folder_path != '':
+            output_format = "PNG"
+            final_path = self.selected_folder_path + "/converter_res"
+            exist_folder = 0
+            for filename in os.listdir(self.selected_folder_path):
+                if filename == "converter_res":
+                    print(filename)
+                    exist_folder = 1
+                else:
+                    continue
+            if exist_folder == 0:
+                os.mkdir(final_path)
+            self.label.setText(f"Ждите окончания конвертации")
+            for filename in os.listdir(self.selected_folder_path):
+                if filename.endswith((".png", ".jpg", ".jpeg")):
+                    img_path = os.path.join(self.selected_folder_path, filename)
+                    with Image.open(img_path) as img:
+                        output_filename = os.path.splitext(filename)[0] + f".{output_format.lower()}"
+                        output_path = os.path.join(final_path, output_filename)
+                        img.convert("RGB").save(output_path, output_format)
+                        self.label.setText("dlfsl")
+            self.label.setText("Конвертация завершена")
+        else:
+            self.label.setText("Не выбрана папка с изображениями")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
