@@ -56,7 +56,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Конвертер")
         self.setGeometry(100, 100, 400, 200)
-        #self.setWindowIcon(QIcon('icon.ico'))
+        self.setWindowIcon(QIcon('icon.ico'))
 
         self.label = QLabel("Папка не выбрана", self)
 
@@ -66,15 +66,42 @@ class MainWindow(QMainWindow):
         self.converter_button = QPushButton("Начать конвертацию", self)
         self.converter_button.clicked.connect(self.convert)
 
+        self.btn1 = QPushButton("PNG", self)
+        self.btn1.setCheckable(True)
+        self.btn1.clicked.connect(self.toggle_exclusive)
+
+        self.btn2 = QPushButton("JPEG", self)
+        self.btn2.setCheckable(True)
+        self.btn2.clicked.connect(self.toggle_exclusive)
+
+        hbox = QHBoxLayout()
+        hbox.addWidget(self.btn1)
+        hbox.addWidget(self.btn2)
+
         layout = QVBoxLayout()
         layout.addWidget(self.label)
         layout.addWidget(self.button)
         layout.addWidget(self.converter_button)
+        layout.addLayout(hbox)
 
         container = QWidget()
         container.setLayout(layout)
         self.setCentralWidget(container)
         self.selected_folder_path = ''
+
+    def toggle_exclusive(self):
+        clicked_button = self.sender()
+        for button in [self.btn1, self.btn2, self.btn3]:
+            if button != clicked_button:
+                button.setChecked(False)
+        self.update_button_styles()
+
+    def update_button_styles(self):
+        for button in [self.btn1, self.btn2, self.btn3]:
+            if button.isChecked():
+                button.setStyleSheet("background-color: lightgray")
+            else:
+                button.setStyleSheet("")
 
     def select_location(self):
         folder_path = QFileDialog.getExistingDirectory(self, 'Выберите папку')
@@ -84,13 +111,13 @@ class MainWindow(QMainWindow):
             print(folder_path)
 
     def convert(self):
+        none_format_flag = 0
+        output_format = ''
         if self.selected_folder_path != '':
-            output_format = "PNG"
             final_path = self.selected_folder_path + "/converter_res"
             exist_folder = 0
             for filename in os.listdir(self.selected_folder_path):
                 if filename == "converter_res":
-                    print(filename)
                     exist_folder = 1
                 else:
                     continue
@@ -101,11 +128,20 @@ class MainWindow(QMainWindow):
                 if filename.endswith((".png", ".jpg", ".jpeg")):
                     img_path = os.path.join(self.selected_folder_path, filename)
                     with Image.open(img_path) as img:
-                        output_filename = os.path.splitext(filename)[0] + f".{output_format.lower()}"
-                        output_path = os.path.join(final_path, output_filename)
-                        img.convert("RGB").save(output_path, output_format)
-                        self.label.setText("dlfsl")
-            self.label.setText("Конвертация завершена")
+                        if self.btn1.isChecked():
+                            output_format = "PNG"
+                        if self.btn2.isChecked():
+                            output_format = "JPEG"
+                        if output_format != '':
+                            output_filename = os.path.splitext(filename)[0] + f".{output_format.lower()}"
+                            output_path = os.path.join(final_path, output_filename)
+                            img.convert("RGB").save(output_path, output_format)
+                        else:
+                            none_format_flag = 1
+                            self.label.setText("Выберите формат")
+            if none_format_flag == 0:
+                self.label.setText("Конвертация завершена")
+                none_format_flag = 0
         else:
             self.label.setText("Не выбрана папка с изображениями")
 
