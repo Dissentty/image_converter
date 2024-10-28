@@ -54,7 +54,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Конвертер")
+        self.setWindowTitle("Конвертер by dissentty")
         self.setGeometry(100, 100, 400, 200)
         self.setWindowIcon(QIcon('icon.ico'))
 
@@ -91,13 +91,13 @@ class MainWindow(QMainWindow):
 
     def toggle_exclusive(self):
         clicked_button = self.sender()
-        for button in [self.btn1, self.btn2, self.btn3]:
+        for button in [self.btn1, self.btn2]:
             if button != clicked_button:
                 button.setChecked(False)
         self.update_button_styles()
 
     def update_button_styles(self):
-        for button in [self.btn1, self.btn2, self.btn3]:
+        for button in [self.btn1, self.btn2]:
             if button.isChecked():
                 button.setStyleSheet("background-color: lightgray")
             else:
